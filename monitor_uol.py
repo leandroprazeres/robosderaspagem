@@ -29,7 +29,7 @@ def get_main_headline():
     }
     
     try:
-        response = requests.get('https://www.uol.com.br/', headers=headers, timeout=10)
+        response = requests.get('https://www.folha.com/', headers=headers, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
         
