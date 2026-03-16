@@ -13,7 +13,10 @@ EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 EMAIL_RECEIVER = os.environ.get("EMAIL_RECEIVER")
 
 if not all([EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECEIVER]):
-    print("ERRO: Credenciais de e-mail ausentes. Verifique as variáveis de ambiente.")
+    print("ERRO: Credenciais de e-mail ausentes. Verifique as variáveis de ambiente no GitHub Secrets.")
+    print(f"Status - EMAIL_SENDER configurado: {bool(EMAIL_SENDER)}")
+    print(f"Status - EMAIL_PASSWORD configurado: {bool(EMAIL_PASSWORD)}")
+    print(f"Status - EMAIL_RECEIVER configurado: {bool(EMAIL_RECEIVER)}")
     sys.exit(1)
 
 # Arquivo local para armazenar a última manchete registrada
