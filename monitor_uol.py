@@ -20,32 +20,32 @@ if not all([EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECEIVER]):
     sys.exit(1)
 
 # Arquivo local para armazenar a última manchete registrada
-STATE_FILE = "ultima_manchete_uol.txt"
+STATE_FILE = "ultima_manchete_folha.txt"
 
 def get_main_headline():
-    """Acessa a página principal do UOL e extrai a manchete principal."""
+    """Acessa a página principal da Folha e extrai a manchete principal."""
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
     
     try:
-        response = requests.get('https://www.folha.com/', headers=headers, timeout=10)
+        response = requests.get('https://www.folha.uol.com.br/', headers=headers, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
         
-        # No UOL, a manchete principal geralmente possui a classe 'headlineMain__title'
-        main_title_tag = soup.find(class_='headlineMain__title')
+        # Na Folha, a manchete principal possui a classe 'c-main-headline__title'
+        main_title_tag = soup.find(class_='c-main-headline__title')
         if main_title_tag:
             return main_title_tag.get_text(strip=True)
             
-        # Fallback de segurança: pegar o primeiro <h3> (que costumam ser os títulos maiores)
-        h3 = soup.find('h3', class_='title__element')
-        if h3:
-            return h3.get_text(strip=True)
+        # Fallback de segurança
+        h2 = soup.find('h2', class_='c-main-headline__title')
+        if h2:
+            return h2.get_text(strip=True)
             
         return None
     except Exception as e:
-        print(f"Erro ao acessar UOL: {e}")
+        print(f"Erro ao acessar Folha: {e}")
         return None
 
 def send_email(new_headline, mudou=True):
@@ -53,11 +53,11 @@ def send_email(new_headline, mudou=True):
     msg = EmailMessage()
     
     if mudou:
-        msg['Subject'] = 'ALERTA: Nova Manchete Principal no UOL'
-        content = f"A manchete principal do UOL acaba de mudar!\n\nNova manchete:\n'{new_headline}'\n\nAcesse agora: https://www.uol.com.br/\n\n(Este é um e-mail automático gerado pelo seu script de monitoramento)."
+        msg['Subject'] = 'ALERTA: Nova Manchete Principal na Folha'
+        content = f"A manchete principal da Folha acaba de mudar!\n\nNova manchete:\n'{new_headline}'\n\nAcesse agora: https://www.folha.uol.com.br/\n\n(Este é um e-mail automático gerado pelo seu script de monitoramento)."
     else:
-        msg['Subject'] = 'Iniciando Monitoramento do UOL'
-        content = f"O monitoramento do UOL foi iniciado com sucesso!\n\nA manchete atual é:\n'{new_headline}'\n\nVocê receberá um novo e-mail quando ela mudar."
+        msg['Subject'] = 'Iniciando Monitoramento da Folha'
+        content = f"O monitoramento da Folha de S.Paulo foi iniciado com sucesso!\n\nA manchete atual é:\n'{new_headline}'\n\nVocê receberá um novo e-mail quando ela mudar."
 
     msg['From'] = EMAIL_SENDER
     msg['To'] = EMAIL_RECEIVER
@@ -75,7 +75,7 @@ def send_email(new_headline, mudou=True):
         print("Verifique suas credenciais e a configuração de 'Senhas de App' no Gmail.")
 
 def main():
-    print("Verificando a página do UOL...")
+    print("Verificando a página da Folha...")
     current_headline = get_main_headline()
     
     if not current_headline:
