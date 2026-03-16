@@ -1,0 +1,43 @@
+name: Monitor UOL Headline
+
+on:
+  schedule:
+    # Roda a cada 15 minutos. (Lembre-se: o tempo no GitHub Actions pode ter um pequeno atraso devido a fila de execução)
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Permite rodar o workflow manualmente no GitHub se você quiser testar
+
+jobs:
+  monitor-uol:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4
+
+    - name: Run Monitor Script
+      env:
+        EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+      run: python monitor_uol.py
+
+    - name: Commit and push state file update
+      # Este passo salva o arquivo ultima_manchete_uol.txt no repositório para que
+      # a próxima execução aos 15 minutos lembre qual foi a última manchete
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add ultima_manchete_uol.txt
+        # O commit pode falhar silenciosamente se o aqruivo nao tiver mudado, o que é esperado.
+        git commit -m "Automated update: Save last observed headline" || echo "No changes to commit"
+        git push
