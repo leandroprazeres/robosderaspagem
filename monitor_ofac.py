@@ -202,10 +202,7 @@ def main():
             print(f"DIFERENÇA DETECTADA! {len(novidades)} nova(s) entidade(s) brasileiras.")
             send_urgent_email(novidades)
         else:
-            print("Nenhuma entidade nova encontrada. Informando sobre consulta sem mudanças.")
-            # A pedido do usuário: "informe se houve mudanças" - vou enviar email para o usuario dizendo que nao houve
-            # O cliente pediu pra avisar que testou hoje.
-            send_no_changes_email(len(current_entities))
+            print("Nenhuma entidade nova encontrada. Nenhuma notificação enviada.")
 
     # Atualiza base de dados
     print("Atualizando o arquivo de estado JSON localmente (e no GitHub logo após pelo git config)...")
