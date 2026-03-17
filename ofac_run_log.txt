@@ -1,0 +1,7 @@
+Conectando ao banco de dados da OFAC via Playwright...
+Print-screen da tela salvo com sucesso em ofac_results.png
+Foram encontrados 22 resultados.
+Primeira execução detectada. Enviando Boas-Vindas e populando base.
+E-mail de boas-vindas enviado!
+Atualizando o arquivo de estado JSON localmente (e no GitHub logo após pelo git config)...
+Concluído.
