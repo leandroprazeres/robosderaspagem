@@ -84,15 +84,14 @@ def extract_brazil_entities():
             return []
             
         rows = table.find_all('tr')
-        # A primeira linha é o cabeçalho
-        if len(rows) <= 1:
+        if not rows:
             return []
             
-        print(f"Foram encontrados {len(rows)-1} resultados.")
+        print(f"Foram encontrados {len(rows)} resultados.")
         
         entities = []
-        # Ignora o cabeçalho [0] e itera sobre os resultados
-        for row in rows[1:]:
+        # A tabela de resultados gvSearchResults NÃO contém header no primeiro TR, todos são dados reais!
+        for row in rows:
             cols = [td.get_text(strip=True) for td in row.find_all('td')]
             if len(cols) >= 5:
                 # O formato da OFAC costuma ser: [Name, Address, Type, Programs, List, Score]
