@@ -1,8 +1,7 @@
 import os
 import smtplib
 from email.message import EmailMessage
-import requests
-from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 import sys
 
 # ==========================================
@@ -23,35 +22,31 @@ if not all([EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECEIVER]):
 STATE_FILE = "ultima_manchete_folha.txt"
 
 def get_main_headline():
-    """Acessa a página principal da Folha e extrai a manchete principal."""
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    }
-    
+    """Acessa a página principal da Folha usando Playwright e extrai a manchete principal."""
+    print("Iniciando navegador headless para acessar a Folha...")
     try:
-        response = requests.get('https://www.folha.uol.com.br/', headers=headers, timeout=10)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # Na Folha, a manchete principal possui a classe 'c-main-headline__title'
-        main_title_tag = soup.find(class_='c-main-headline__title')
-        if main_title_tag:
-            return main_title_tag.get_text(strip=True)
-            
-        # Fallback de segurança
-        h2 = soup.find('h2', class_='c-main-headline__title')
-        if h2:
-            return h2.get_text(strip=True)
-            
-        return None
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                viewport={"width": 1280, "height": 800}
+            )
+            page = context.new_page()
+            page.goto("https://www.folha.uol.com.br/", timeout=30000, wait_until="domcontentloaded")
+
+            # Aguarda a manchete aparecer
+            page.wait_for_selector(".c-main-headline__title", timeout=10000)
+            headline = page.locator(".c-main-headline__title").first.inner_text()
+            browser.close()
+            return headline.strip() if headline else None
     except Exception as e:
-        print(f"Erro ao acessar Folha: {e}")
+        print(f"Erro ao acessar Folha via Playwright: {e}")
         return None
 
 def send_email(new_headline, mudou=True):
     """Envia o e-mail de alerta com a nova manchete."""
     msg = EmailMessage()
-    
+
     if mudou:
         msg['Subject'] = 'ALERTA: Nova Manchete Principal na Folha'
         content = f"A manchete principal da Folha acaba de mudar!\n\nNova manchete:\n'{new_headline}'\n\nAcesse agora: https://www.folha.uol.com.br/\n\n(Este é um e-mail automático gerado pelo seu script de monitoramento)."
@@ -62,13 +57,11 @@ def send_email(new_headline, mudou=True):
     msg['From'] = EMAIL_SENDER
     msg['To'] = EMAIL_RECEIVER
     msg.set_content(content)
-    
+
     try:
-        # Configuração para Gmail usando SSL (porta 465)
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
             smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
             smtp.send_message(msg)
-            
         print("E-mail de alerta enviado com sucesso!")
     except Exception as e:
         print(f"Erro ao enviar o e-mail: {e}")
@@ -77,7 +70,7 @@ def send_email(new_headline, mudou=True):
 def main():
     print("Verificando a página da Folha...")
     current_headline = get_main_headline()
-    
+
     if not current_headline:
         print("Não foi possível encontrar a manchete atual na página.")
         return
@@ -92,13 +85,13 @@ def main():
 
     # Compara a nova com a antiga
     if current_headline != previous_headline:
-        if previous_headline: # Só avisa se não for a primeira execução salva
+        if previous_headline:  # Só avisa se não for a primeira execução salva
             print("A manchete MUDOU! Preparando para enviar e-mail.")
             send_email(current_headline, mudou=True)
         else:
             print("Primeira execução registrada. Enviando e-mail de confirmação de funcionamento.")
             send_email(current_headline, mudou=False)
-            
+
         # Atualiza o arquivo com a nova manchete
         with open(STATE_FILE, "w", encoding="utf-8") as f:
             f.write(current_headline)

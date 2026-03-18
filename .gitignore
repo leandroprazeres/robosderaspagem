@@ -1,0 +1,21 @@
+# Venvs
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Large downloaded files
+manguinhos_downloader/
+epstein_research/
+extracted_emails/
+file_downloader/
+*.pdf
+*.xlsx
+
+# Playwright local cache
+/Users/
+playwright/
+
+# Other
+.DS_Store
+ofac_run_log.txt
