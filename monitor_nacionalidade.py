@@ -66,8 +66,15 @@ def get_process_status():
 
             # Carregar a página
             print(f"Acessando: {TARGET_URL}")
-            page.goto(TARGET_URL, wait_until="networkidle", timeout=30000)
-            human_delay(1000, 2000)
+            try:
+                page.goto(TARGET_URL, wait_until="domcontentloaded", timeout=90000)
+                print("Página carregada (DOM Content Loaded). Aguardando rede estabilizar...")
+                page.wait_for_load_state("networkidle", timeout=30000)
+            except Exception as e:
+                print(f"Aviso durante carregamento inicial: {e}")
+                print("Tentando prosseguir com o que carregou...")
+            
+            human_delay(2000, 4000)
 
             # Preencher o campo de senha de acesso
             print(f"Preenchendo o número do processo: {PROCESS_NUMBER}")
