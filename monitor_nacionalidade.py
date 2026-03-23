@@ -87,10 +87,10 @@ def get_process_status():
             # Tentar clicar no checkbox do hCaptcha
             print("Tentando clicar no checkbox do hCaptcha...")
             try:
-                # hCaptcha fica dentro de um iframe
-                hcaptcha_frame = page.frame_locator("iframe[src*='hcaptcha']")
+                # hCaptcha fica dentro de um iframe. Usamos .first caso existam múltiplos frames técnicos
+                hcaptcha_frame = page.frame_locator("iframe[src*='hcaptcha']").first
                 checkbox = hcaptcha_frame.locator("#checkbox")
-                checkbox.click(timeout=5000)
+                checkbox.click(timeout=10000)
                 human_delay(2000, 4000)
                 print("Checkbox clicado. Aguardando validação do hCaptcha...")
             except Exception as e:
@@ -100,11 +100,15 @@ def get_process_status():
             # Clicar em Pesquisar
             print("Clicando em 'Pesquisar'...")
             page.locator("button.btn-primary", has_text="Pesquisar").click()
-            human_delay(3000, 5000)
+            human_delay(5000, 8000)
 
             # Aguardar resultado (página deve recarregar ou mostrar resultado)
-            page.wait_for_load_state("networkidle", timeout=15000)
-            human_delay(1000, 2000)
+            try:
+                page.wait_for_load_state("networkidle", timeout=30000)
+            except Exception:
+                print("Aviso: Timeout aguardando rede estabilizar após pesquisa. Prosseguindo...")
+            
+            human_delay(2000, 4000)
 
             # Tirar screenshot do resultado
             page.screenshot(path=SCREENSHOT_FILE, full_page=True)
