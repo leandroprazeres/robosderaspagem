@@ -1,0 +1,46 @@
+name: Monitor Nacionalidade Portuguesa
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+on:
+  schedule:
+    - cron: '0 10 * * *'  # Todo dia às 10:00 UTC = 07:00 BRT
+  workflow_dispatch:       # Permite disparo manual para testes
+
+jobs:
+  monitor-nacionalidade:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install playwright
+        playwright install --with-deps chromium
+
+    - name: Run Nationality Monitor Script
+      env:
+        EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+      run: python monitor_nacionalidade.py
+
+    - name: Commit and push state file update
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add estado_nacionalidade.txt || true
+        git add nacionalidade_resultado.png || true
+        git commit -m "Automated update: Save nationality process state" || echo "No changes to commit"
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
