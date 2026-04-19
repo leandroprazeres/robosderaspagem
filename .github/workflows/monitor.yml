@@ -37,11 +37,3 @@ jobs:
         EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
       run: python monitor_uol.py
 
-    - name: Commit and push state file update
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add ultimas_manchetes.json
-        if [ -f email_error.txt ]; then git add email_error.txt; fi
-        git commit -m "Automated update: Save last observed headlines" || echo "No changes to commit"
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
