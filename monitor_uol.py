@@ -41,7 +41,15 @@ def get_headlines():
             selectors = portal["selectors"]
             print(f"[{name}] Acessando {url} ...")
             
-            headline = None
+            headline_text = None
+            headline_link = None
+            
+            # Helper to extract link
+            def extract_info(el):
+                text = el.inner_text().strip()
+                link = el.evaluate("node => { let a = node.closest('a'); return a ? a.href : (node.querySelector('a') ? node.querySelector('a').href : ''); }")
+                return text, link
+
             try:
                 page = context.new_page()
                 page.goto(url, timeout=45000, wait_until="domcontentloaded")
@@ -54,36 +62,41 @@ def get_headlines():
                         # Pega todos os matches e pega o primeiro que tiver texto razoável
                         elements = page.locator(sel).all()
                         for el in elements:
-                            text = el.inner_text().strip()
+                            text, link = extract_info(el)
                             if text and len(text) > 10:
-                                headline = text
+                                headline_text = text
+                                headline_link = link
                                 break
-                        if headline:
+                        if headline_text:
                             break # Achou uma manchete viável com esse seletor
                     except Exception:
                         continue # tenta o próximo seletor
                 
                 # Fallback genérico caso todos falhem e ele tenha carregado
-                if not headline:
+                if not headline_text:
                     for gen_sel in ["h1", "h2"]:
                         try:
                             elements = page.locator(gen_sel).all()
                             for el in elements:
-                                text = el.inner_text().strip()
+                                text, link = extract_info(el)
                                 # Evita pegar logos que costumam ter texto curto (ex: "oglobo", "Metrópoles")
                                 if text and len(text) > 25:
-                                    headline = text
+                                    headline_text = text
+                                    headline_link = link
                                     break
-                            if headline:
+                            if headline_text:
                                 break
                         except:
                             continue
 
-                resultados[name] = headline if headline else "Manchete não identificada neste horário"
+                if headline_text:
+                    resultados[name] = {"text": headline_text, "link": headline_link}
+                else:
+                    resultados[name] = {"text": "Manchete não identificada neste horário", "link": ""}
                 page.close()
             except Exception as e:
                 print(f"Erro ao acessar {name}: {e}")
-                resultados[name] = "Falha ao carregar o portal"
+                resultados[name] = {"text": "Falha ao carregar o portal", "link": ""}
                 
         browser.close()
         return resultados
@@ -98,16 +111,26 @@ def send_email(headlines):
     msg = EmailMessage()
     msg['Subject'] = 'Boletim de Manchetes Principais'
     
-    content = "Aqui estão as principais manchetes deste horário:\n\n"
-    for portal, headline in headlines.items():
-        content += f"➡️ {portal}: {headline}\n\n"
+    content_text = "Aqui estão as principais manchetes deste horário:\n\n"
+    content_html = "<html><body><p>Aqui estão as principais manchetes deste horário:</p><ul>"
+    for portal, data in headlines.items():
+        text = data.get("text", "")
+        link = data.get("link", "")
         
-    content += "--------------------------------------\n"
-    content += "Robô de raspagem concluído com sucesso."
+        if link and not link.startswith("javascript"):
+            content_text += f"➡️ {portal}: {text}\nLink: {link}\n\n"
+            content_html += f"<li><b>{portal}</b>: <a href='{link}'>{text}</a></li>"
+        else:
+            content_text += f"➡️ {portal}: {text}\n\n"
+            content_html += f"<li><b>{portal}</b>: {text}</li>"
+            
+    content_text += "--------------------------------------\nRobô de raspagem concluído com sucesso."
+    content_html += "</ul><hr><p>Robô de raspagem concluído com sucesso.</p></body></html>"
 
     msg['From'] = EMAIL_SENDER
     msg['To'] = EMAIL_RECEIVER
-    msg.set_content(content)
+    msg.set_content(content_text)
+    msg.add_alternative(content_html, subtype='html')
 
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
@@ -130,7 +153,7 @@ def main():
     if current_headlines:
         print("\nManchetes coletadas:")
         for k, v in current_headlines.items():
-            print(f"- {k}: {v}")
+            print(f"- {k}: {v['text']} ({v['link']})")
             
         print("\nIniciando envio de e-mail...")
         send_email(current_headlines)
@@ -149,6 +172,6 @@ if __name__ == "__main__":
         headlines = get_headlines()
         print("\n--- RESULTADOS DO TESTE ---")
         for k, v in headlines.items():
-            print(f"{k}: {v}")
+            print(f"{k}: {v['text']}\nLink: {v['link']}\n")
     else:
         main()
