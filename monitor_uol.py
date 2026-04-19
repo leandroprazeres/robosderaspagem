@@ -150,6 +150,9 @@ def main():
         send_email(changes, is_first_run=False)
     else:
         print(f"Leituras bem-sucedidas em {valid_reads} portais. Nenhuma mudança detectada na execução de agora.")
+        print("FORÇANDO O ENVIO DO E-MAIL PARA CAPTURAR RETRY DO SMTP.")
+        changes["🔧 DEBUG SISTEMA"] = {"old": "N/A", "new": "Esta é uma nova mensagem de teste acionada manualmente."}
+        send_email(changes, is_first_run=False)
 
     # Always save state for successful items
     with open(STATE_FILE, "w", encoding="utf-8") as f:
