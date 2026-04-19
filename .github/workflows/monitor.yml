@@ -1,15 +1,16 @@
-name: Monitor UOL Headline
+name: Monitor Portais Headlines
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # 6h, 12h, 15h, 19h, 22h BRT -> 9h, 15h, 18h, 22h, 1h UTC
+    - cron: '0 1,9,15,18,22 * * *'
   workflow_dispatch:
 
 jobs:
-  monitor-uol:
+  monitor-portais:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -40,6 +41,6 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add ultima_manchete_folha.txt
-        git commit -m "Automated update: Save last observed headline" || echo "No changes to commit"
+        git add ultimas_manchetes.json
+        git commit -m "Automated update: Save last observed headlines" || echo "No changes to commit"
         git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
