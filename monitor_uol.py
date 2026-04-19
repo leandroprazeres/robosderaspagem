@@ -97,8 +97,13 @@ def send_email(changes, is_first_run=False):
             smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
             smtp.send_message(msg)
         print("E-mail de alerta enviado com sucesso!")
+        if os.path.exists("email_error.txt"):
+            os.remove("email_error.txt")
     except Exception as e:
         print(f"Erro ao enviar o e-mail: {e}")
+        import traceback
+        with open("email_error.txt", "w", encoding="utf-8") as err_f:
+            err_f.write(f"Erro: {e}\n\n{traceback.format_exc()}")
         print("Verifique suas credenciais e a configuração de 'Senhas de App' no Gmail.")
 
 def main():
