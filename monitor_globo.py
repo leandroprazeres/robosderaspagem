@@ -8,7 +8,7 @@ from playwright.sync_api import sync_playwright
 # ==========================================
 EMAIL_SENDER = os.environ.get("EMAIL_SENDER")
 EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-EMAIL_RECEIVER = "leonetybsb@gmail.com"
+EMAIL_RECEIVER = "leoonetybsb@gmail.com"
 
 URL = "https://www.globo.com/"
 SELECTORS = [
