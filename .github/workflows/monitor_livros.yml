@@ -1,6 +1,9 @@
 name: Monitor Semanal de Livros Vestibular
 
 on:
+  push:
+    paths:
+      - '.github/workflows/monitor_livros.yml'
   schedule:
     - cron: '0 10 * * 1'  # Toda segunda-feira (1) às 10:00 UTC (07:00 horário de Brasília)
   workflow_dispatch:
