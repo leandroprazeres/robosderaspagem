@@ -1,0 +1,25 @@
+name: Monitor Semanal de Livros Vestibular
+
+on:
+  schedule:
+    - cron: '0 10 * * 1'  # Toda segunda-feira (1) às 10:00 UTC (07:00 horário de Brasília)
+  workflow_dispatch:
+
+jobs:
+  run-book-monitor:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+        
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Executar bot de livros
+        env:
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python monitor_livros.py
