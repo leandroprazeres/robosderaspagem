@@ -91,16 +91,14 @@ def send_email(headline):
     texto = headline.get("text", "")
     link = headline.get("link", "")
     
-    content_text = f"Bom dia Leonardo!\n\nAqui está a manchete principal de hoje do site globo.com:\n\n{texto}\nLink: {link}\n\nTenha um ótimo dia!"
+    content_text = f"Bom dia, meu filho amado. Veja aqui as manchetes que eu selecionei pra você!\nTe amo!\n\nManchete: {texto}\nLink: {link}\n"
     
     content_html = f"""
     <html>
       <body>
-        <p>Bom dia Leonardo!</p>
-        <p>Aqui está a manchete principal de hoje do site globo.com:</p>
+        <p>Bom dia, meu filho amado. Veja aqui as manchetes que eu selecionei pra você!</p>
+        <p>Te amo!</p>
         <h2><a href='{link}'>{texto}</a></h2>
-        <br>
-        <p>Tenha um ótimo dia!</p>
       </body>
     </html>
     """
