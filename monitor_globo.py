@@ -2,6 +2,8 @@ import os
 import smtplib
 from email.message import EmailMessage
 from playwright.sync_api import sync_playwright
+from datetime import datetime
+import time
 
 # ==========================================
 # CONFIGURAÇÕES DE E-MAIL
@@ -10,99 +12,92 @@ EMAIL_SENDER = os.environ.get("EMAIL_SENDER")
 EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 EMAIL_RECEIVER = "leoonetybsb@gmail.com"
 
-URL = "https://www.globo.com/"
-SELECTORS = [
-    ".hui-manchete__title", 
-    ".hui-manchete__link", 
-    ".post__title", 
-    "h2.post__title"
-]
+URLS = {
+    "GE.globo.com": {
+        "url": "https://ge.globo.com/",
+        "selectors": [".feed-post-link"]
+    },
+    "Marca - Barcelona": {
+        "url": "https://www.marca.com/futbol/barcelona.html",
+        "selectors": [".ue-c-cover-content__headline-group h2"]
+    },
+    "Marca - Real Madrid": {
+        "url": "https://www.marca.com/futbol/real-madrid.html",
+        "selectors": [".ue-c-cover-content__headline-group h2"]
+    },
+    "Marca - Atletico": {
+        "url": "https://www.marca.com/futbol/atletico.html",
+        "selectors": [".ue-c-cover-content__headline-group h2"]
+    },
+    "Marca - Liverpool": {
+        "url": "https://www.marca.com/organizacion/liverpool.html",
+        "selectors": [".ue-c-cover-content__headline-group h2"]
+    },
+    "Marca - Futebol": {
+        "url": "https://www.marca.com/futbol.html",
+        "selectors": [".ue-c-cover-content__headline-group h2"]
+    },
+    "Lance - Fluminense": {
+        "url": "https://www.lance.com.br/fluminense",
+        "selectors": [".title-feed"]
+    }
+}
 
-def get_globo_headline():
-    print("Iniciando navegador headless para acessar globo.com...")
-    resultado = {"text": "Manchete não encontrada", "link": ""}
+
+def get_headlines():
+    print("Iniciando coleta de manchetes...")
+    headlines = []
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-            viewport={"width": 1280, "height": 800}
-        )
-        try:
-            page = context.new_page()
-            page.goto(URL, timeout=45000, wait_until="domcontentloaded")
-            
-            headline_text = None
-            headline_link = None
-            
-            def extract_info(el):
-                text = el.inner_text().strip()
-                link = el.evaluate("node => { let a = node.closest('a'); return a ? a.href : (node.querySelector('a') ? node.querySelector('a').href : ''); }")
-                return text, link
+        for site_name, config in URLS.items():
+            print(f"Acessando {site_name}")
+            try:
+                context = browser.new_context()
+                page = context.new_page()
+                page.goto(config["url"], timeout=45000, wait_until="domcontentloaded")
 
-            for sel in SELECTORS:
-                try:
-                    page.wait_for_selector(sel, timeout=3000)
-                    elements = page.locator(sel).all()
-                    for el in elements:
-                        text, link = extract_info(el)
-                        # Ignora textos muito curtos que podem não ser a manchete
-                        if text and len(text) > 20: 
-                            headline_text = text
-                            headline_link = link
-                            break
-                    if headline_text:
-                        break
-                except Exception:
-                    continue
-
-            # Fallback
-            if not headline_text:
-                for gen_sel in ["h2"]:
+                for sel in config["selectors"]:
                     try:
-                        elements = page.locator(gen_sel).all()
+                        page.wait_for_selector(sel, timeout=3000)
+                        elements = page.locator(sel).all()
                         for el in elements:
-                            text, link = extract_info(el)
-                            if text and len(text) > 40 and "globo" not in text.lower():
-                                headline_text = text
-                                headline_link = link
+                            text = el.inner_text().strip()
+                            link = el.get_attribute("href")
+                            if text and link:
+                                headlines.append({"site": site_name, "text": text, "link": link})
                                 break
-                        if headline_text:
-                            break
-                    except:
-                        continue
+                    except Exception as e:
+                        print(f"Erro ao coletar manchetes de {site_name}: {e}")
 
-            if headline_text:
-                resultado = {"text": headline_text, "link": headline_link}
-        except Exception as e:
-            print(f"Erro ao acessar {URL}: {e}")
-        finally:
-            browser.close()
-            
-    return resultado
+            except Exception as e:
+                print(f"Erro ao acessar {config['url']}: {e}")
 
-def send_email(headline):
+        browser.close()
+    return headlines
+
+
+def send_email(headlines):
     if not all([EMAIL_SENDER, EMAIL_PASSWORD]):
         print("ERRO: Credenciais de e-mail ausentes. O e-mail não será enviado.")
         return
 
     msg = EmailMessage()
-    msg['Subject'] = 'Manchete do Dia - globo.com'
-    
-    texto = headline.get("text", "")
-    link = headline.get("link", "")
-    
-    content_text = f"Bom dia, meu filho amado. Veja aqui as manchetes que eu selecionei pra você!\nTe amo!\n\nManchete: {texto}\nLink: {link}\n"
-    
-    content_html = f"""
+    msg['Subject'] = 'Manchetes do Dia - Resumo Esportivo'
+
+    content_text = "Bom dia! Veja aqui as principais manchetes que selecionei para você:\n\n"
+    content_html = """
     <html>
       <body>
-        <p>Bom dia, meu filho amado. Veja aqui as manchetes que eu selecionei pra você!</p>
-        <p>Te amo!</p>
-        <h2><a href='{link}'>{texto}</a></h2>
-      </body>
-    </html>
+        <p>Bom dia! Veja aqui as principais manchetes que selecionei para você:</p>
+        <ul>
     """
-    
+
+    for headline in headlines:
+        content_text += f"- {headline['site']}: {headline['text']} ({headline['link']})\n"
+        content_html += f"<li><strong>{headline['site']}</strong>: <a href='{headline['link']}'>{headline['text']}</a></li>"
+
+    content_html += "</ul></body></html>"
+
     msg['From'] = EMAIL_SENDER
     msg['To'] = EMAIL_RECEIVER
     msg.set_content(content_text)
@@ -112,23 +107,24 @@ def send_email(headline):
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
             smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
             smtp.send_message(msg)
-        print("\nE-mail enviado com sucesso para Leonardo!")
+        print("E-mail enviado com sucesso!")
     except Exception as e:
-        print(f"\nErro ao enviar o e-mail: {e}")
+        print(f"Erro ao enviar o e-mail: {e}")
+
 
 def main():
-    print("Iniciando coleta da manchete...")
-    headline = get_globo_headline()
-    print(f"\nManchete coletada:\n- {headline['text']}\n- Link: {headline['link']}")
-    
-    if headline["text"] != "Manchete não encontrada":
-        if os.environ.get("TEST_RUN"):
-            print("\nModo de teste: o e-mail não foi enviado.")
-        else:
-            print("\nIniciando envio de e-mail...")
-            send_email(headline)
-    else:
-        print("Nenhuma manchete coletada para enviar.")
+    print("Iniciando execução do monitor...")
+    while True:
+        now = datetime.now()
+        if now.hour in [6, 12, 18, 0] and now.minute == 0:
+            headlines = get_headlines()
+            if headlines:
+                send_email(headlines)
+            else:
+                print("Nenhuma manchete foi coletada.")
+            time.sleep(60)  # Evita múltiplas execuções no mesmo minuto
+        time.sleep(30)  # Verifica a cada 30 segundos
+
 
 if __name__ == "__main__":
     main()
