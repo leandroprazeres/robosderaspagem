@@ -8,7 +8,7 @@ import datetime
 # ==========================================
 EMAIL_SENDER = os.environ.get("EMAIL_SENDER")
 EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-EMAIL_RECEIVER = "leoonetybsb@gmail.com"
+EMAIL_RECEIVER = os.environ.get("EMAIL_RECEIVER")
 
 # Lista de livros cobrados frequentemente nos grandes vestibulares (FUVEST, UNICAMP, etc.)
 LIVROS = [

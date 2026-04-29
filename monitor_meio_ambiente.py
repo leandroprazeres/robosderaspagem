@@ -9,7 +9,7 @@ import sys
 # ==========================================
 EMAIL_SENDER = os.environ.get("EMAIL_SENDER")
 EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-EMAIL_RECEIVER = os.environ.get("EMAIL_RECEIVER", "clarapresotti@gmail.com")
+EMAIL_RECEIVER = os.environ.get("EMAIL_RECEIVER")
 
 PORTALS = [
     {"name": "Folha (Ambiente)", "url": "https://www1.folha.uol.com.br/ambiente/", "selectors": [".c-headline__title", ".c-main-headline__title", "h2.c-headline__title"]},
