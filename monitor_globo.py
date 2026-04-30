@@ -19,27 +19,27 @@ URLS = {
     },
     "Marca - Barcelona": {
         "url": "https://www.marca.com/futbol/barcelona.html",
-        "selectors": [".ue-c-cover-content__headline-group h2"]
+        "selectors": [".ue-c-cover-content__headline-group h2", "h2.ue-c-cover-content__headline"]
     },
     "Marca - Real Madrid": {
         "url": "https://www.marca.com/futbol/real-madrid.html",
-        "selectors": [".ue-c-cover-content__headline-group h2"]
+        "selectors": [".ue-c-cover-content__headline-group h2", "h2.ue-c-cover-content__headline"]
     },
     "Marca - Atletico": {
         "url": "https://www.marca.com/futbol/atletico.html",
-        "selectors": [".ue-c-cover-content__headline-group h2"]
+        "selectors": [".ue-c-cover-content__headline-group h2", "h2.ue-c-cover-content__headline"]
     },
     "Marca - Liverpool": {
         "url": "https://www.marca.com/organizacion/liverpool.html",
-        "selectors": [".ue-c-cover-content__headline-group h2"]
+        "selectors": [".ue-c-cover-content__headline-group h2", "h2.ue-c-cover-content__headline"]
     },
     "Marca - Futebol": {
         "url": "https://www.marca.com/futbol.html",
-        "selectors": [".ue-c-cover-content__headline-group h2"]
+        "selectors": [".ue-c-cover-content__headline-group h2", "h2.ue-c-cover-content__headline"]
     },
     "Lance - Fluminense": {
         "url": "https://www.lance.com.br/fluminense",
-        "selectors": [".title-feed"]
+        "selectors": [".title-feed", "h2", "h3"]
     }
 }
 
@@ -114,16 +114,11 @@ def send_email(headlines):
 
 def main():
     print("Iniciando execução do monitor...")
-    while True:
-        now = datetime.now()
-        if now.hour in [6, 12, 18, 0] and now.minute == 0:
-            headlines = get_headlines()
-            if headlines:
-                send_email(headlines)
-            else:
-                print("Nenhuma manchete foi coletada.")
-            time.sleep(60)  # Evita múltiplas execuções no mesmo minuto
-        time.sleep(30)  # Verifica a cada 30 segundos
+    headlines = get_headlines()
+    if headlines:
+        send_email(headlines)
+    else:
+        print("Nenhuma manchete foi coletada.")
 
 
 if __name__ == "__main__":
