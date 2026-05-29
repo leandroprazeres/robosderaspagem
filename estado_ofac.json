@@ -56,6 +56,13 @@
     "List": "SDN"
   },
   {
+    "Name": "COMANDO VERMELHO",
+    "Address": "",
+    "Type": "Entity",
+    "Program": "SDGT",
+    "List": "SDN"
+  },
+  {
     "Name": "ENTERPRISE COMERCIO DE MOVEIS E INTERMEDIACAO DE NEGOCIOS EIRELI",
     "Address": "Rua Ernesto Nazareth 18; Jardim Paraventi",
     "Type": "Entity",
@@ -122,7 +129,7 @@
     "Name": "PRIMEIRO COMANDO DA CAPITAL",
     "Address": "",
     "Type": "Entity",
-    "Program": "ILLICIT-DRUGS-EO14059",
+    "Program": "ILLICIT-DRUGS-EO14059; SDGT",
     "List": "SDN"
   },
   {
