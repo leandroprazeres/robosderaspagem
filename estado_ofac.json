@@ -59,7 +59,7 @@
     "Name": "COMANDO VERMELHO",
     "Address": "",
     "Type": "Entity",
-    "Program": "SDGT",
+    "Program": "FTO; SDGT",
     "List": "SDN"
   },
   {
@@ -129,7 +129,7 @@
     "Name": "PRIMEIRO COMANDO DA CAPITAL",
     "Address": "",
     "Type": "Entity",
-    "Program": "ILLICIT-DRUGS-EO14059; SDGT",
+    "Program": "FTO; ILLICIT-DRUGS-EO14059; SDGT",
     "List": "SDN"
   },
   {
