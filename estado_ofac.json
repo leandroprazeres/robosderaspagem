@@ -63,6 +63,13 @@
     "List": "SDN"
   },
   {
+    "Name": "DE OLIVEIRA SHIMADA, Victor Henrique",
+    "Address": "",
+    "Type": "Individual",
+    "Program": "ILLICIT-DRUGS-EO14059; SDGT",
+    "List": "SDN"
+  },
+  {
     "Name": "ENTERPRISE COMERCIO DE MOVEIS E INTERMEDIACAO DE NEGOCIOS EIRELI",
     "Address": "Rua Ernesto Nazareth 18; Jardim Paraventi",
     "Type": "Entity",
@@ -112,6 +119,13 @@
     "List": "SDN"
   },
   {
+    "Name": "NUNES HENRIQUE DE OLIVEIRA, Stella Stefanie",
+    "Address": "",
+    "Type": "Individual",
+    "Program": "ILLICIT-DRUGS-EO14059; SDGT",
+    "List": "SDN"
+  },
+  {
     "Name": "OCEAN MARITIME MANAGEMENT COMPANY LIMITED",
     "Address": "",
     "Type": "Entity",
@@ -123,6 +137,13 @@
     "Address": "605 Avenida Brasil, Apt No. 48, Foz do Iguacu",
     "Type": "Individual",
     "Program": "SDGT",
+    "List": "SDN"
+  },
+  {
+    "Name": "PIXWAVE SOLUCOES DE PAGAMENTOS LTDA",
+    "Address": "",
+    "Type": "Entity",
+    "Program": "ILLICIT-DRUGS-EO14059; SDGT",
     "List": "SDN"
   },
   {
@@ -151,6 +172,20 @@
     "Address": "",
     "Type": "Entity",
     "Program": "FTO; SDGT; TCO",
+    "List": "SDN"
+  },
+  {
+    "Name": "VICTORY TRADING INTERMEDIACAO DE NEGOCIOS COBRANCAS E TECNOLOGIA LTDA",
+    "Address": "",
+    "Type": "Entity",
+    "Program": "ILLICIT-DRUGS-EO14059; SDGT",
+    "List": "SDN"
+  },
+  {
+    "Name": "WAVE CONSTRUCOES INTELIGENTES LTDA",
+    "Address": "",
+    "Type": "Entity",
+    "Program": "ILLICIT-DRUGS-EO14059; SDGT",
     "List": "SDN"
   },
   {

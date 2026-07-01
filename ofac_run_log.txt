@@ -1,7 +1,8 @@
 Conectando ao banco de dados da OFAC via Playwright...
 Print-screen da tela salvo com sucesso em ofac_results.png
-Foram encontrados 23 resultados.
+Foram encontrados 28 resultados.
 Lendo a memória local (estado anterior)...
-Nenhuma entidade nova encontrada. Nenhuma notificação enviada.
+DIFERENÇA DETECTADA! 5 nova(s) entidade(s) brasileiras.
+E-mail de ALERTA URGENTE enviado com 5 novas entidades!
 Atualizando o arquivo de estado JSON localmente (e no GitHub logo após pelo git config)...
 Concluído.
