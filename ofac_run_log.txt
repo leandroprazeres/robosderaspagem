@@ -1,6 +1,7 @@
 Conectando ao banco de dados da OFAC via Playwright...
-Erro durante a conexão/extração da OFAC: Page.wait_for_selector: Timeout 15000ms exceeded.
-Call log:
-  - waiting for locator("#gvSearchResults") to be visible
-
-Busca retornou vazia ou falhou. Abortando execução desta rodada.
+Print-screen da tela salvo com sucesso em ofac_results.png
+Foram encontrados 28 resultados.
+Lendo a memória local (estado anterior)...
+Nenhuma entidade nova encontrada. Nenhuma notificação enviada.
+Atualizando o arquivo de estado JSON localmente (e no GitHub logo após pelo git config)...
+Concluído.
