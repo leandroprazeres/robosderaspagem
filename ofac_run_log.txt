@@ -1,7 +1,6 @@
 Conectando ao banco de dados da OFAC via Playwright...
-Print-screen da tela salvo com sucesso em ofac_results.png
-Foram encontrados 28 resultados.
-Lendo a memória local (estado anterior)...
-Nenhuma entidade nova encontrada. Nenhuma notificação enviada.
-Atualizando o arquivo de estado JSON localmente (e no GitHub logo após pelo git config)...
-Concluído.
+Erro durante a conexão/extração da OFAC: Page.goto: net::ERR_CONNECTION_REFUSED at https://sanctionssearch.ofac.treas.gov/
+Call log:
+  - navigating to "https://sanctionssearch.ofac.treas.gov/", waiting until "load"
+
+Busca retornou vazia ou falhou. Abortando execução desta rodada.
