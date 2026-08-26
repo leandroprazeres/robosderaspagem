@@ -21,6 +21,13 @@
     "List": "SDN"
   },
   {
+    "Name": "ALSAGHEER, Rawa",
+    "Address": "",
+    "Type": "Individual",
+    "Program": "SDGT",
+    "List": "SDN"
+  },
+  {
     "Name": "AMORIM FERREIRA, Ciro Daniel",
     "Address": "Rua Maranhao, 1566 Apto 502; Funcionarios",
     "Type": "Individual",
@@ -115,6 +122,13 @@
     "Name": "KAZAN, Ali Muhammad",
     "Address": "Avenue Taroba, 1005 Edificio Beatriz Mendes, Apt 1704, Foz do Iguacu",
     "Type": "Individual",
+    "Program": "SDGT",
+    "List": "SDN"
+  },
+  {
+    "Name": "MASAR BADIL",
+    "Address": "",
+    "Type": "Entity",
     "Program": "SDGT",
     "List": "SDN"
   },
